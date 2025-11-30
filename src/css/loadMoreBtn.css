@@ -1,0 +1,21 @@
+.load-more-btn {
+    display: block;
+    margin: 32px auto 44px auto;
+    padding: 10px 28px;
+
+    background-color: #4E75FF;
+    color: #FFFFFF;
+    font-family: montserrat;
+    font-size: 16px;
+
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.load-more-btn:hover {
+    background-color: #6C8CFF;
+    
+}
