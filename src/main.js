@@ -12,10 +12,7 @@ let totalHits = 0;
 // const input = form.elements["search-text"];
 
 form.addEventListener('submit', onSearchFormSubmit);
-if (loadMoreBtn) {
-    loadMoreBtn.addEventListener('click', onLoadMoreClick);
-}
-
+loadMoreBtn.addEventListener('click', onLoadMoreClick);
 async function onSearchFormSubmit(e) {
     e.preventDefault();
     const query = input.value.trim();
@@ -31,12 +28,13 @@ async function onSearchFormSubmit(e) {
     currentPage = 1;
     totalHits = 0;
     clearGallery();
-    showLoadMoreButton();
+    hideLoadMoreButton();
     showLoader();
     try {
         const data = await getImagesByQuery(currentQuery, currentPage);
-        hideLoader();
         if (!data.hits || data.hits.length === 0) {
+            hideLoader();
+            hideLoadMoreButton();
             iziToast.info({
                 title: 'Attention!',
                 message: 'Sorry, there are no images matching your search query. Please try again!',
@@ -57,10 +55,10 @@ async function onSearchFormSubmit(e) {
                 position: 'topRight',
             });
         };
+        hideLoader();
     } catch(error) {
         hideLoader();
-        
-        
+        hideLoadMoreButton();
         iziToast.error({
             message: 'Something went wrong! Please try again later!',
             position: 'topRight',
@@ -80,7 +78,15 @@ async function onLoadMoreClick() {
     showLoader();
     try {
         const data = await getImagesByQuery(currentQuery, currentPage);
-        hideLoader();
+        if (!data.hits || data.hits.length === 0) {
+            hideLoader();
+            iziToast.info({
+                title: 'Attention!',
+                message: 'No more images!',
+                position: 'topRight',
+            });
+            return;
+        }
         createGallery(data.hits);
         smoothScroll();
         const isMorePages = currentPage * PER_PAGE < totalHits;
@@ -94,8 +100,10 @@ async function onLoadMoreClick() {
                 position: 'topRight',
             });
         };
+        hideLoader();
     } catch (error) {
         hideLoader();
+        hideLoadMoreButton();
         console.log('errorSubmit', error);
         console.log('response', error?.response);
         iziToast.error({
